@@ -1,0 +1,71 @@
+{
+  "name": "lhc",
+  "displayName": "lhc",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lhc.sessionTimeInfo",
+        "title": "Session time info"
+      },
+      {
+        "command": "lhc.toggleSessionCounter",
+        "title": "Toggle session counter"
+      }
+    ],
+    "configuration": {
+      "title": "Language hour counter",
+      "properties": {
+        "lhc.prueba": {
+          "type": "boolean",
+          "default": false,
+          "description": "Complete functions with their parameter signature."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "lhc-data",
+          "title": "LHC Data",
+          "icon": "resources/lhc.svg",
+          "contextualTitle": "language hour counter"
+        }
+      ]
+    },
+    "views": {
+      "lhc-data": [
+        {
+          "id": "view-lhc-data",
+          "name": "Total hours counted"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.82.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "eslint": "^8.47.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.1.6",
+    "@vscode/test-electron": "^2.3.4"
+  }
+}
