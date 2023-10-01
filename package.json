@@ -4,6 +4,7 @@
   "publisher": "glichester",
   "description": "",
   "version": "0.0.3",
+  "repository": "https://github.com/Glichzard/lhc",
   "engines": {
     "vscode": "^1.82.0"
   },
