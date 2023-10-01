@@ -19,6 +19,7 @@ class LanguageItem extends vscode.TreeItem {
 	constructor(langId, seconds) {
 		const item = `${langId}: ${formatTime(seconds)}`
 		super(item, vscode.TreeItemCollapsibleState.None)
+		this.tooltip = formatTime(seconds)
 	}
 }
 
@@ -70,8 +71,8 @@ function langCounter() {
 
 function sessionTimeCounter() {
 	timeCounter = setInterval(() => {
-		sessionTimeItem.text = formatTime(seconds)
 		seconds++
+		sessionTimeItem.text = formatTime(seconds)
 	}, 1000)
 }
 
@@ -89,7 +90,7 @@ function daemon(context) {
 	}, 5000)
 }
 
-function handlePause() {
+function handlePause(context) {
 	clearInterval(timeCounter)
 	clearInterval(langTimeCounter)
 
@@ -102,6 +103,7 @@ function handlePause() {
 		return
 	}
 
+	saveData(context)
 	sessionTimeItem.text = formatTime(seconds) + `$(debug-pause)`
 	sessionTimeItem.tooltip = "Unpause session time"
 	timeCounterStopped = true
@@ -110,64 +112,60 @@ function handlePause() {
 function activate(context) {
 	savedLangs = JSON.parse(context.globalState.get("langs"))
 
-	languageProvider = new LanguageProvider(savedLangs)
-	vscode.window.createTreeView('view-lhc-data', { treeDataProvider: languageProvider })
+	// languageProvider = new LanguageProvider(savedLangs)
+	// vscode.window.createTreeView('view-lhc-data', { treeDataProvider: languageProvider })
 
-	langId = vscode.window.activeTextEditor.document.languageId
+	// langId = vscode.window.activeTextEditor.document.languageId
 
 	const showSessionTimeInfo = vscode.commands.registerCommand("lhc.sessionTimeInfo", () => {
 		vscode.window.showInformationMessage(savedLangs.join(", "))
 	})
 	context.subscriptions.push(showSessionTimeInfo)
 
-	const toggleSessionCounter = vscode.commands.registerCommand("lhc.toggleSessionCounter", () => handlePause())
+	const toggleSessionCounter = vscode.commands.registerCommand("lhc.toggleSessionCounter", () => handlePause(context))
 	context.subscriptions.push(toggleSessionCounter)
 
-	sessionTimeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0)
-	sessionTimeItem.text = "00h 00m 00s"
-	sessionTimeItem.command = "lhc.toggleSessionCounter"
-	sessionTimeItem.tooltip = "Pause session time"
-	sessionTimeItem.show()
-	sessionTimeCounter()
+	// sessionTimeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0)
+	// sessionTimeItem.text = "00h 00m 00s"
+	// sessionTimeItem.command = "lhc.toggleSessionCounter"
+	// sessionTimeItem.tooltip = "Pause session time"
+	// sessionTimeItem.show()
+	// sessionTimeCounter()
 
-	context.subscriptions.push(sessionTimeItem)
+	// context.subscriptions.push(sessionTimeItem)
 
-	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => {
-		saveData(context)
-		const savedLangsPared = JSON.stringify(savedLangs)
-		context.globalState.update("langs", savedLangsPared)
+	// context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => {
+	// 	saveData(context)
 
-		langId = vscode.window.activeTextEditor.document.languageId
+	// 	langId = vscode.window.activeTextEditor.document.languageId
 
-		const objetosEncontrados = savedLangs.find(object => object.id == langId)
+	// 	const objetosEncontrados = savedLangs.find(object => object.id == langId)
 
-		if (!objetosEncontrados) {
-			savedLangs.push({ "id": langId, "time": 0 })
-		}
+	// 	if (!objetosEncontrados) {
+	// 		savedLangs.push({ "id": langId, "time": 0 })
+	// 	}
 
-		if (timeCounterStopped) return
-		langCounter()
-	}))
+	// 	if (timeCounterStopped) return
+	// 	langCounter()
+	// }))
 
-	context.subscriptions.push(vscode.window.onDidChangeWindowState(() => {
-		if (!vscode.window.state.focused) {
-			const savedLangsPared = JSON.stringify(savedLangs)
-			context.globalState.update("langs", savedLangsPared)
-			timeCounterStopped = false
-			handlePause()
-			return
-		}
+	// context.subscriptions.push(vscode.window.onDidChangeWindowState(() => {
+	// 	if (!vscode.window.state.focused) {
+	// 		saveData(context)
+	// 		timeCounterStopped = false
+	// 		handlePause(context)
+	// 		return
+	// 	}
 
-		timeCounterStopped = true
-		handlePause()
-	}))
-	
-	daemon(context)
+	// 	timeCounterStopped = true
+	// 	handlePause(context)
+	// }))
+
+	// daemon(context)
 }
 
 function deactivate(context) {
-	const savedLangsPared = JSON.stringify(savedLangs)
-	context.globalState.update("langs", savedLangsPared)
+	saveData(context)
 }
 
 module.exports = {
