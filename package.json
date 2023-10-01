@@ -2,8 +2,11 @@
   "name": "lhc",
   "displayName": "lhc",
   "publisher": "glichester",
-  "description": "",
-  "version": "0.0.3",
+  "description": "This extension allows you to have a count of the number of hours of programming for each language.",
+  "version": "0.0.4",
+  "icon": "./resources/icon.png",
+  "license": "MIT",
+  "pricing": "Free",
   "repository": "https://github.com/Glichzard/lhc",
   "engines": {
     "vscode": "^1.82.0"
