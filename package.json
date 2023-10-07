@@ -3,7 +3,7 @@
   "displayName": "lhc",
   "publisher": "glichester",
   "description": "This extension allows you to have a count of the number of hours of programming for each language.",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "icon": "./resources/icon.png",
   "license": "MIT",
   "pricing": "Free",
@@ -21,10 +21,6 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "lhc.sessionTimeInfo",
-        "title": "Session time info"
-      },
       {
         "command": "lhc.toggleSessionCounter",
         "title": "Toggle session counter"
