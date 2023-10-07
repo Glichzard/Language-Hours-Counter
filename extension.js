@@ -9,6 +9,7 @@ let sessionInterval = undefined
 let sessionTimeItem = undefined
 let languageProvider = undefined
 let initialActiveEditor = undefined
+let lastActiveEditor = undefined
 let activeLangObject = {}
 let savedLangs = []
 let seconds = 0
@@ -92,13 +93,11 @@ function daemon(context) {
 }
 
 function pauseTime() {
-
 	clearInterval(sessionInterval)
-
 	clearInterval(langTimeInterval)
 
 	sessionTimeItem.text = formatTime(seconds) + `$(debug-pause)`
-	sessionTimeItem.tooltip = "Unpause session time"
+	sessionTimeItem.tooltip = "Unause session time"
 
 }
 
@@ -106,8 +105,9 @@ function unpauseTime() {
 	if (timePaused) {
 		return
 	}
-
-	sessionTimeCounter()
+	if (vscode.window.activeTextEditor == undefined) {
+		return
+	}
 
 	langTimeCounter()
 	sessionTimeItem.tooltip = "Pause session time"
@@ -136,8 +136,14 @@ function activate(context) {
 			saveData(context)
 
 			if (vscode.window.activeTextEditor == undefined) {
+				lastActiveEditor = undefined
 				pauseTime()
 				return
+			}
+
+
+			if (lastActiveEditor == undefined && !timePaused) {
+				sessionTimeCounter()
 			}
 
 			unpauseTime()
@@ -149,22 +155,29 @@ function activate(context) {
 				savedLangs.push({ "id": langId, "time": 0 })
 			}
 
+			lastActiveEditor = vscode.window.activeTextEditor.document.languageId
 		})
 	)
 
 	context.subscriptions.push(vscode.window.onDidChangeWindowState(() => {
 		if (!vscode.window.state.focused) {
-			clearInterval(langTimeInterval)
 			pauseTime()
 			return
+		}
+
+		if (!timePaused && vscode.window.activeTextEditor != undefined) {
+			// clearInterval(sessionInterval)
+			console.log("entre")
+			sessionTimeCounter()
 		}
 
 		unpauseTime()
 	}))
 
 	context.subscriptions.push(vscode.commands.registerCommand("lhc.toggleSessionCounter", () => {
-		if (timePaused) {
+		if (timePaused && vscode.window.activeTextEditor != undefined && vscode.window.state.focused) {
 			timePaused = false
+			sessionTimeCounter()
 			unpauseTime()
 			return
 		}

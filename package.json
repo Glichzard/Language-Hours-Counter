@@ -1,9 +1,9 @@
 {
   "name": "lhc",
-  "displayName": "lhc",
+  "displayName": "Language Hours Counter",
   "publisher": "glichester",
   "description": "This extension allows you to have a count of the number of hours of programming for each language.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "icon": "./resources/icon.png",
   "license": "MIT",
   "pricing": "Free",
@@ -26,23 +26,13 @@
         "title": "Toggle session counter"
       }
     ],
-    "configuration": {
-      "title": "Language hour counter",
-      "properties": {
-        "lhc.prueba": {
-          "type": "boolean",
-          "default": false,
-          "description": "Complete functions with their parameter signature."
-        }
-      }
-    },
     "viewsContainers": {
       "activitybar": [
         {
           "id": "lhc-data",
           "title": "LHC Data",
           "icon": "resources/lhc.svg",
-          "contextualTitle": "language hour counter"
+          "contextualTitle": "Language Hours Counter"
         }
       ]
     },
