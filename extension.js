@@ -10,7 +10,6 @@ let sessionTimeItem = undefined
 let languageProvider = undefined
 let initialActiveEditor = undefined
 let lastActiveEditor = undefined
-let animationInterval = undefined
 let activeLangObject = {}
 let savedLangs = []
 let seconds = 0
