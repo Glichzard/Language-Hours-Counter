@@ -212,15 +212,6 @@ function activate(context) {
 		vscode.window.createTreeView('view-lhc-data', { treeDataProvider: languageProvider })
 	}))
 
-
-
-
-
-
-
-
-
-
 	context.subscriptions.push(vscode.commands.registerCommand("lhc.authenticate", async () => {
 		const secrets = context['secrets'];
 		const token = await secrets.get('token'); 
@@ -244,7 +235,7 @@ function activate(context) {
 	}))
 
 
-	const provider = vscode.window.registerUriHandler({
+	context.subscriptions.push(vscode.window.registerUriHandler({
 		handleUri(uri) {
 			const query = new URLSearchParams(uri.query);
 			const token = query.get('token');
@@ -274,16 +265,7 @@ function activate(context) {
 					vscode.window.showErrorMessage("Autenticación fallida, intentalo nuevamente")
 				});
 		}
-	});
-
-	context.subscriptions.push(provider);
-
-
-
-
-
-
-
+	}))
 
 	sessionTimeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0)
 	sessionTimeItem.text = "00h 00m 00s" + `$(clock)`
