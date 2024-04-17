@@ -1,4 +1,5 @@
 const vscode = require("vscode")
+const axios = require("axios");
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -14,6 +15,8 @@ let activeLangObject = {}
 let savedLangs = []
 let seconds = 0
 let timePaused = false
+
+const serverUrl = "http://localhost:3000"
 
 class LanguageItem extends vscode.TreeItem {
 	constructor(langId, seconds) {
@@ -186,14 +189,13 @@ function activate(context) {
 			return
 		}
 
-	
-		if(vscode.window.activeTextEditor == undefined && timePaused) {
+		if (vscode.window.activeTextEditor == undefined && timePaused) {
 			timePaused = false
 			sessionTimeItem.text = formatTime(seconds) + `$(clock)`
 			sessionTimeItem.tooltip = "Time automatically paused"
 			return
 		}
-		
+
 		timePaused = true
 		pauseTime()
 
@@ -209,6 +211,79 @@ function activate(context) {
 		languageProvider = new LanguageProvider(savedLangs)
 		vscode.window.createTreeView('view-lhc-data', { treeDataProvider: languageProvider })
 	}))
+
+
+
+
+
+
+
+
+
+
+	context.subscriptions.push(vscode.commands.registerCommand("lhc.authenticate", async () => {
+		const secrets = context['secrets'];
+		const token = await secrets.get('token'); 
+
+		console.debug(token !== undefined)
+
+		if(token !== undefined) {
+			vscode.window.showInformationMessage("Ya estas logueado")
+			return
+		}
+
+		const externalUrl = serverUrl + "/auth/google/vscode";
+		vscode.env.openExternal(vscode.Uri.parse(externalUrl))
+	}))
+
+	context.subscriptions.push(vscode.commands.registerCommand("lhc.logout", async () => {
+		const secrets = context['secrets'];
+		await secrets.delete('token'); 
+
+		vscode.window.showInformationMessage("Deslogueado correctamente")
+	}))
+
+
+	const provider = vscode.window.registerUriHandler({
+		handleUri(uri) {
+			const query = new URLSearchParams(uri.query);
+			const token = query.get('token');
+
+			if (!token) {
+				vscode.window.showErrorMessage("Authentication error, try again!");
+				return
+			}
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			};
+
+			// @ts-ignore
+			axios.get(`${serverUrl}/auth/vscode`, config)
+				.then(async (response) => {
+					console.debug(response.data)
+					vscode.window.showInformationMessage(`Autenticado correctamente como ${response.data.email}`)
+
+					const secrets = context['secrets'];
+					await secrets.store('token', response.data.token);
+				})
+				.catch(error => {
+					console.debug(error)
+					vscode.window.showErrorMessage("Autenticación fallida, intentalo nuevamente")
+				});
+		}
+	});
+
+	context.subscriptions.push(provider);
+
+
+
+
+
+
+
 
 	sessionTimeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0)
 	sessionTimeItem.text = "00h 00m 00s" + `$(clock)`
