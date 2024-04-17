@@ -40,6 +40,7 @@ class LanguageProvider {
 	}
 
 	getChildren(element) {
+		console.log(element)
 		return Promise.resolve(this.times)
 	}
 }

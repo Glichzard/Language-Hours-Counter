@@ -28,6 +28,10 @@
       {
         "command": "lhc.clearHistory",
         "title": "Clear Language History"
+      },
+      {
+        "command": "lhc.authenticate",
+        "title": "Auth me"
       }
     ],
     "viewsContainers": {
@@ -64,5 +68,8 @@
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "axios": "^1.6.8"
   }
 }
