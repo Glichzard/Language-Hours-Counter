@@ -245,7 +245,6 @@ function activate(context) {
 				return
 			}
 
-			
 			const config = {
 				headers: {
 					Authorization: `Bearer ${token}`
